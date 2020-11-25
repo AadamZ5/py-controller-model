@@ -9,3 +9,6 @@
 
 #Pycache
 __pycache__
+
+#Local experimentation folder
+experiment

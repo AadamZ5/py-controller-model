@@ -9,4 +9,7 @@ setup(
     author_email='azocolo@gmail.com',
     license='MIT',
     packages=['controllermodel'],
+    install_requires=[
+        
+    ],
     zip_safe=False)

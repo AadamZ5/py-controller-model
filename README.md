@@ -5,7 +5,11 @@ Simplifies arbitrary API creation by leaving definition and binding in-code.
 Goals:
 - [x] Bind a controller to a model
 - [x] Register using decorators 
+- [ ] Unit testing
+- [ ] GH Actions automated testing
+- [ ] Code coverage
 - [ ] Easy documentation (and basic introspection?)
+- [ ] push to pypi.org
 
 ## Installation
 

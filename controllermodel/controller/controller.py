@@ -4,7 +4,7 @@ The file contains the code for the GenericController class.
 
 import inspect
 import functools
-from typing import Dict, T, Callable
+from typing import Optional
 
 from .controllerinterface import ControllerInterface
 
@@ -14,21 +14,32 @@ class GenericController(ControllerInterface):
     """
 
     _registered_classes = {}   # Dict of {
-                                #           klass: {
-                                #               action: method        
+                                #           registering_controller {
+                                #               klass: {
+                                #                   action: method        
+                                #               }
                                 #           }
                                 #       }
 
-    def __init__(self, instance_of_class: T):
-        print(GenericController._registered_classes)
-        if not instance_of_class.__class__.__qualname__ in GenericController._registered_classes:
+    def __init__(self, instance_of_class: Optional[object] = None):
+        self._cls_instance = None
+        self._func_set = None
+        if instance_of_class != None:
+            self.connect_instance(instance_of_class)
+
+    def connect_instance(self, instance_of_class):
+        """
+        Connect an instance to the action definitions.
+        """
+
+        if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__, {}):
             raise Exception(f"Class {instance_of_class} has not been regestered with this controller class (yet?)!")
 
         self._cls_instance = instance_of_class
-        self._func_set = self._registered_classes[instance_of_class.__class__.__qualname__]
+        self._func_set = self._registered_classes[self.__class__][instance_of_class.__class__.__qualname__]
 
     @classmethod
-    def register_model(cls, _reg_cls: T):
+    def register_model(cls, _reg_cls):
         """
         This is a decorator funciton.
 
@@ -58,14 +69,13 @@ class GenericController(ControllerInterface):
 
         def wrapper_func(func):
 
-            # See: https://stackoverflow.com/questions/2609518/unboundlocalerror-with-nested-function-scopes
+            # `nonlocal` beacause see: https://stackoverflow.com/questions/2609518/unboundlocalerror-with-nested-function-scopes
             nonlocal action
             nonlocal description
             nonlocal cls
 
             print(action)
             print(description)
-            cls = cls
             print(cls)
 
             if action == None:
@@ -89,7 +99,9 @@ class GenericController(ControllerInterface):
             if owning_class == '':
                 #TODO: Add ability for class-less functions / top-level qualnames to be registered!
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
-            cls._registered_classes[owning_class] = {action: func}
+            if not cls in cls._registered_classes:
+                cls._registered_classes[cls] = {}
+            cls._registered_classes[cls][owning_class] = {action: func}
             return func
 
         if _func == None:

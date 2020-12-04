@@ -13,6 +13,8 @@ Clone this repository, then when inside of the directory, install with `pip inst
 
 ## Example usage
 
+### Useage of the generic implementation
+
 ```python
 import controllermodel as cm
 
@@ -28,6 +30,42 @@ a = A()
 gc = cm.GenericController(a)
 
 #Now wire in gc to an API endpoint class such as a websocket to easily and quickly map API calls.
+```
+
+### Noticing how a derived class behaves
+
+```python
+import controllermodel as cm
+
+class SpecificController(cm.GenericController):
+    def __init__(self, instance_of_class):
+        super().__init__(instance_of_class)
+
+    def special_method(self):
+        print(self._registered_classes)
+
+@SpecificController.register_model
+class A:
+    def __init__(self):
+        self.a = "A variable"
+
+    @SpecificController.register_action
+    def myaction(self):
+        print(self.a)
+
+
+
+print(cm.GenericController._registered_classes)     # Although this variable isn't to be used by you,
+print(SpecificController._registered_classes)       # it is worth noting that these will be the same value.
+
+a = A()
+sc = SpecificController(a)
+gc = cm.GenericController(a)    # <<-- This will raise an Exception! We have not registered any
+                                #       functions of class A to `GenericController`
+
+sc.special_method()
+sc.execute_action('myaction')
+
 ```
 
 ### Notes

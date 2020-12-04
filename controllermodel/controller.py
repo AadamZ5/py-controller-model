@@ -4,7 +4,7 @@ The file contains the code for the GenericController class.
 
 import inspect
 import functools
-from typing import Optional
+from typing import Optional, Union, List, Tuple
 
 from .controllerinterface import ControllerInterface
 
@@ -27,19 +27,29 @@ class GenericController(ControllerInterface):
         if instance_of_class != None:
             self.connect_instance(instance_of_class)
 
-    def connect_instance(self, instance_of_class):
+    def connect_instance(self, instance_of_class: Union[List[object], Tuple[object], object], *additional_instances: Tuple[object]):
         """
         Connect an instance to the action definitions.
         """
 
-        if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
-            raise Exception(f"Class {instance_of_class} has not been regestered with this controller class (yet?)!")
+        if len(additional_instances) > 0:
+            instance_of_class = [instance_of_class, *additional_instances]
 
-        self._class_instances[instance_of_class.__class__.__qualname__] = instance_of_class
-        func_names = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__].keys()
+        if(isinstance(instance_of_class, list) or isinstance(instance_of_class, tuple)):
+            for i in instance_of_class:
+                self.connect_instance(i)
+        else:
+            if instance_of_class == None:
+                raise TypeError(f"Can't connect instance `None` type!")
 
-        for n in func_names:
-            self._func_set[n] = (instance_of_class.__class__.__qualname__, self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__][n]) # Tuple of (class_name, unbound_func)
+            if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
+                raise Exception(f"Class '{instance_of_class}' has not been regestered with this controller class (yet?)!")
+
+            self._class_instances[instance_of_class.__class__.__qualname__] = instance_of_class
+            func_names = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__].keys()
+
+            for n in func_names:
+                self._func_set[n] = (instance_of_class.__class__.__qualname__, self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__][n]) # Tuple of (class_name, unbound_func)
             
 
     @classmethod
@@ -67,7 +77,7 @@ class GenericController(ControllerInterface):
             actions = cls._registered_classes[cls.__qualname__][registered_class].keys()
             if action_name in actions:
                 conflicting_action = str(next((x for x in actions if x == action_name), '[Unknown]'))
-                raise ValueError(f"Action name {action_name} has already been registered on controller {cls.__qualname__}!\nConflicting registration with action {conflicting_action} from class {registered_class}.")
+                raise ValueError(f"Action name '{action_name}' has already been registered on controller '{cls.__qualname__}'!\nConflicting registration with action '{conflicting_action}' from class '{registered_class}'.")
 
 
     @classmethod

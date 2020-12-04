@@ -26,7 +26,6 @@ def test_action():
     a = A()
     b = B()
     gc = GenericController()
-    gc.connect_instance(a)
-    gc.connect_instance(b)
+    gc.connect_instance(a, b)
     assert gc.execute_action('actiona') == "A variable"
     assert gc.execute_action('actionb') == "B variable"

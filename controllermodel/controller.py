@@ -40,7 +40,7 @@ class GenericController(ControllerInterface):
                 self.connect_instance(i)
         else:
             if instance_of_class == None:
-                raise TypeError(f"Can't connect instance `None` type!")
+                raise TypeError("Can't connect instance 'None' type!")
 
             if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
                 raise Exception(f"Class '{instance_of_class}' has not been regestered with this controller class (yet?)!")

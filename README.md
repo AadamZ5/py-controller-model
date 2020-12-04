@@ -13,7 +13,7 @@ Clone this repository, then when inside of the directory, install with `pip inst
 
 ## Example usage
 
-### Useage of the generic implementation
+### Usage of the generic implementation
 
 ```python
 import controllermodel as cm

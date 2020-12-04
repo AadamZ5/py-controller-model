@@ -39,8 +39,6 @@ class GenericController(ControllerInterface):
         # This doesn't get called until all of the functions are done being defined
         # in the potential model class. 
 
-        #cls._registered_classes[str(_reg_cls.__qualname__)] don't do nothin
-
         # The biggest challenge is linking the instance to its type's registered actions. 
         # When this function is used as a decorator 
         return _reg_cls
@@ -56,43 +54,50 @@ class GenericController(ControllerInterface):
         docstring.
         """
 
-        #If we can figure out how to grab class instances, we can hotwire them into the function calls.
+        print(str(_func))
 
-        def wrapper_func(func, *a, action=None, description=None):
-            print(f"Registering function {func}")
+        def wrapper_func(func):
 
-            if action != None:
-                print(f"Overriding action name to {action}")
-            else:
+            # See: https://stackoverflow.com/questions/2609518/unboundlocalerror-with-nested-function-scopes
+            nonlocal action
+            nonlocal description
+            nonlocal cls
+
+            print(action)
+            print(description)
+            cls = cls
+            print(cls)
+
+            if action == None:
                 try:
-                    action = func.__name__
+                    action = func.__name__ # Try and get a name from the function itself if they didn't supply one.
                 except AttributeError:
-                    raise TypeError("Object is not a named function!")
-            if description != None:
-                print(f"Overriding description to {description}")
-            else:
-                description = inspect.getdoc(func)
+                    raise TypeError("Object is not a named function!") #! We don't like lambdas! (Can you even decorate those?)
+            if description == None:
+                description = inspect.getdoc(func) # See if we can grab the docstring if one exists.
 
+            # Get the owning class's qualifying name
             owning_class = None
             try:
-                qn = str(func.__qualname__)
-                qn = qn.replace(func.__name__, '')
-                if qn[-1] == '.':
+                qn = str(func.__qualname__)             # A.B.cmethod
+                qn = qn.replace(func.__name__, '')      # A.B.
+                if qn[-1] == '.':                       # A.B
                     qn = qn[:-1]
-                owning_class = qn
+                owning_class = qn                       # 🙂
             except AttributeError:
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
             if owning_class == '':
+                #TODO: Add ability for class-less functions / top-level qualnames to be registered!
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
-            print(f"Owning class is {owning_class}")
             cls._registered_classes[owning_class] = {action: func}
-
             return func
 
         if _func == None:
-            return wrapper_func
+            print("Returning un-parameterized dec-func")
+            return wrapper_func # If the decorator was called with keyword parameters, the _func variable isn't supplied. Just return this function to be applied.
         else:
-            return wrapper_func(_func, action=action, description=description)
+            print("Returning barebones dec-func")
+            return wrapper_func(_func) #If the decorator was called without keywords, the function we are targeting is implicitly supplied.
 
     def execute_action(self, action: str, *a, **kw):
         if action in self._func_set:

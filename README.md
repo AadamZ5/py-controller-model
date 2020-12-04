@@ -5,11 +5,17 @@ Simplifies arbitrary API creation by leaving definition and binding in-code.
 Goals:
 - [x] Bind a controller to a model
 - [x] Register using decorators 
+- [ ] Unit testing
+- [ ] GH Actions automated testing
+- [ ] Code coverage
 - [ ] Easy documentation (and basic introspection?)
+- [ ] push to pypi.org
 
 ## Installation
 
-Clone this repository, then when inside of the directory, install with `pip install .`
+Install this repository directly with `pip install git+https://github.com/AadamZ5/py-controller-model/`
+
+Alternatively, clone this repository, then when inside of the directory, install with `pip install .`
 
 ## Example usage
 
@@ -18,18 +24,19 @@ Clone this repository, then when inside of the directory, install with `pip inst
 ```python
 import controllermodel as cm
 
+# This is our data model class of some sort.
 class A:
     def __init__(self):
         self.a = "A variable"
 
-    @cm.GenericController.register_action(action="action")
-    def myaction(self):
-        print(self.a)
+    @cm.GenericController.register_action(action="action") # The "action" and "description" keywords can be used to override 
+    def myaction(self):                                    # the name and description (usually gathered fromthe funciton 
+        print(self.a)                                      # name and docstring, respectively).
 
 a = A()
 gc = cm.GenericController(a)
 
-#Now wire in gc to an API endpoint class such as a websocket to easily and quickly map API calls.
+# Now wire in `gc` to an API endpoint class such as a websocket to easily and quickly map API calls.
 ```
 
 ### Noticing how a derived class behaves
@@ -38,7 +45,7 @@ gc = cm.GenericController(a)
 import controllermodel as cm
 
 
-#Here we define our specific controller. It can have special logic and methods and algorithms for our arbitrary API.
+# Here we define our specific controller. It can have special logic and methods and algorithms for our arbitrary API.
 class SpecificController(cm.GenericController):
     def __init__(self, instance_of_class):
         super().__init__(instance_of_class)
@@ -46,13 +53,13 @@ class SpecificController(cm.GenericController):
     def special_method(self):
         print(self._registered_classes)
 
-#Here we use our SpecificController to tell it what methods to expect.
+# Here we use our SpecificController to tell it what methods to expect.
 @SpecificController.register_model
 class A:
     def __init__(self):
         self.a = "A variable"
 
-    #More specifically, when we decorate, we tell our controller to expect this function on the instance we supply.
+    # More specifically, when we decorate, we tell our controller to expect this function on the instance we supply.
     @SpecificController.register_action
     def myaction(self):
         print(self.a)

@@ -1,3 +1,5 @@
+import pytest
+
 from controllermodel import GenericController
 
 @GenericController.register_model
@@ -9,11 +11,6 @@ class A:
     def myaction(self):
         print(self.a)
         return self.a
-
-
-
-print(GenericController._registered_classes)
-
 
 def test_action():
     a = A()

@@ -14,7 +14,7 @@ class GenericController(ControllerInterface):
     """
 
     _registered_classes = {}   # Dict of {
-                                #           registering_controller {
+                                #           registering_controller: {
                                 #               klass: {
                                 #                   action: method        
                                 #               }
@@ -22,8 +22,8 @@ class GenericController(ControllerInterface):
                                 #       }
 
     def __init__(self, instance_of_class: Optional[object] = None):
-        self._cls_instance = None
-        self._func_set = None
+        self._func_set = {} # Dict of {action: class_qualname}
+        self._class_instances = {}
         if instance_of_class != None:
             self.connect_instance(instance_of_class)
 
@@ -35,8 +35,12 @@ class GenericController(ControllerInterface):
         if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
             raise Exception(f"Class {instance_of_class} has not been regestered with this controller class (yet?)!")
 
-        self._cls_instance = instance_of_class
-        self._func_set = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__]
+        self._class_instances[instance_of_class.__class__.__qualname__] = instance_of_class
+        func_names = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__].keys()
+
+        for n in func_names:
+            self._func_set[n] = (instance_of_class.__class__.__qualname__, self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__][n]) # Tuple of (class_name, unbound_func)
+            
 
     @classmethod
     def register_model(cls, _reg_cls):
@@ -55,6 +59,18 @@ class GenericController(ControllerInterface):
         return _reg_cls
 
     @classmethod
+    def _check_action_exists(cls, action_name):
+        if not cls.__qualname__ in cls._registered_classes:
+            return 
+
+        for registered_class in cls._registered_classes[cls.__qualname__].keys():
+            actions = cls._registered_classes[cls.__qualname__][registered_class].keys()
+            if action_name in actions:
+                conflicting_action = str(next((x for x in actions if x == action_name), '[Unknown]'))
+                raise ValueError(f"Action name {action_name} has already been registered on controller {cls.__qualname__}!\nConflicting registration with action {conflicting_action} from class {registered_class}.")
+
+
+    @classmethod
     def register_action(cls, _func=None, *args, action=None, description=None, **kw):
         """
         This is a decorator function.
@@ -65,26 +81,26 @@ class GenericController(ControllerInterface):
         docstring.
         """
 
-        print(str(_func))
-
         def wrapper_func(func):
+
+            if not callable(func):
+                raise TypeError(f"Object {func} is not callable!")
 
             # `nonlocal` beacause see: https://stackoverflow.com/questions/2609518/unboundlocalerror-with-nested-function-scopes
             nonlocal action
             nonlocal description
             nonlocal cls
 
-            print(action)
-            print(description)
-            print(cls)
-
             if action == None:
                 try:
                     action = func.__name__ # Try and get a name from the function itself if they didn't supply one.
                 except AttributeError:
-                    raise TypeError("Object is not a named function!") #! We don't like lambdas! (Can you even decorate those?)
+                    raise TypeError(f"Object {func} is not a named function!") #! We don't like lambdas! (Can you even decorate those?)
             if description == None:
                 description = inspect.getdoc(func) # See if we can grab the docstring if one exists.
+
+            # Make sure there are no conflicting action names registered on this specific controller.
+            cls._check_action_exists(action) # This will except if there is. 
 
             # Get the owning class's qualifying name
             owning_class = None
@@ -107,14 +123,14 @@ class GenericController(ControllerInterface):
             return func
 
         if _func == None:
-            print("Returning un-parameterized dec-func")
             return wrapper_func # If the decorator was called with keyword parameters, the _func variable isn't supplied. Just return this function to be applied.
         else:
-            print("Returning barebones dec-func")
-            return wrapper_func(_func) #If the decorator was called without keywords, the function we are targeting is implicitly supplied.
+            return wrapper_func(_func) # If the decorator was called without keywords, the function we are targeting is implicitly supplied.
 
     def execute_action(self, action: str, *a, **kw):
-        if action in self._func_set:
-            return self._func_set[action](self._cls_instance, *a, **kw)
-        else:
-            return None
+        if action in self._func_set: # Find out where the action came from. Which class?
+            class_type, func = self._func_set[action] # Get the class name, and the unbound function   
+            class_instance = self._class_instances.get(class_type, None) # Try to get an instance
+            if class_instance:
+                return func(class_instance, *a, **kw) # Go!
+        return None

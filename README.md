@@ -23,9 +23,9 @@ class A:
     def __init__(self):
         self.a = "A variable"
 
-    @cm.GenericController.register_action(action="action") # The "action" and "description" keywords can be used to override the name and description (usually gathered from
-    def myaction(self):                                    # the funciton name and docstring, respectively).
-        print(self.a)
+    @cm.GenericController.register_action(action="action") # The "action" and "description" keywords can be used to override 
+    def myaction(self):                                    # the name and description (usually gathered fromthe funciton 
+        print(self.a)                                      # name and docstring, respectively).
 
 a = A()
 gc = cm.GenericController(a)

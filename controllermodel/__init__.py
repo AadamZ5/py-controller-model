@@ -1,3 +1,3 @@
-from controllermodel.controller.controllerinterface import ControllerInterface
-from controllermodel.controller.controller import GenericController
+from controllermodel.src.controllerinterface import ControllerInterface
+from controllermodel.src.controller import GenericController
 

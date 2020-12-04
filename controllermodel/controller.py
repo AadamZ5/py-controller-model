@@ -43,7 +43,7 @@ class GenericController(ControllerInterface):
                 raise TypeError("Can't connect instance 'None' type!")
 
             if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
-                raise Exception(f"Class '{instance_of_class}' has not been regestered with this controller class (yet?)!")
+                raise Exception("Class '{0}' has not been regestered with this controller class (yet?)!".format(instance_of_class))
 
             self._class_instances[instance_of_class.__class__.__qualname__] = instance_of_class
             func_names = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__].keys()
@@ -77,7 +77,7 @@ class GenericController(ControllerInterface):
             actions = cls._registered_classes[cls.__qualname__][registered_class].keys()
             if action_name in actions:
                 conflicting_action = str(next((x for x in actions if x == action_name), '[Unknown]'))
-                raise ValueError(f"Action name '{action_name}' has already been registered on controller '{cls.__qualname__}'!\nConflicting registration with action '{conflicting_action}' from class '{registered_class}'.")
+                raise ValueError("Action name '{0}' has already been registered on controller '{1}'!\nConflicting registration with action '{2}' from class '{3}'.".format(action_name,cls.__qualname__,conflicting_action,registered_class))
 
 
     @classmethod
@@ -94,7 +94,7 @@ class GenericController(ControllerInterface):
         def wrapper_func(func):
 
             if not callable(func):
-                raise TypeError(f"Object {func} is not callable!")
+                raise TypeError("Object {0} is not callable!".format(func))
 
             # `nonlocal` beacause see: https://stackoverflow.com/questions/2609518/unboundlocalerror-with-nested-function-scopes
             nonlocal action
@@ -105,7 +105,7 @@ class GenericController(ControllerInterface):
                 try:
                     action = func.__name__ # Try and get a name from the function itself if they didn't supply one.
                 except AttributeError:
-                    raise TypeError(f"Object {func} is not a named function!") #! We don't like lambdas! (Can you even decorate those?)
+                    raise TypeError("Object {0} is not a named function!".format(func)) #! We don't like lambdas! (Can you even decorate those?)
             if description == None:
                 description = inspect.getdoc(func) # See if we can grab the docstring if one exists.
 

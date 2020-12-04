@@ -99,7 +99,7 @@ class GenericController(ControllerInterface):
             if owning_class == '':
                 #TODO: Add ability for class-less functions / top-level qualnames to be registered!
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
-            if not cls in cls._registered_classes:
+            if not cls.__qualname__ in cls._registered_classes:
                 cls._registered_classes[cls.__qualname__] = {}
             cls._registered_classes[cls.__qualname__][owning_class] = {action: func}
             return func

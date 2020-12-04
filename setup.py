@@ -1,6 +1,6 @@
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='controllermodel',
     version='0.1',
     description='A simple controller-model implementation.',
@@ -8,7 +8,7 @@ setup(
     author='Aadam Zocolo',
     author_email='azocolo@gmail.com',
     license='MIT',
-    packages=['controllermodel'],
+    packages=setuptools.find_packages(),
     install_requires=[
         
     ],

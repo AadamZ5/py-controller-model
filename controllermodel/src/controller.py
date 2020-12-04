@@ -32,11 +32,11 @@ class GenericController(ControllerInterface):
         Connect an instance to the action definitions.
         """
 
-        if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__, {}):
+        if not instance_of_class.__class__.__qualname__ in self.__class__._registered_classes.get(self.__class__.__qualname__, {}):
             raise Exception(f"Class {instance_of_class} has not been regestered with this controller class (yet?)!")
 
         self._cls_instance = instance_of_class
-        self._func_set = self._registered_classes[self.__class__][instance_of_class.__class__.__qualname__]
+        self._func_set = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__]
 
     @classmethod
     def register_model(cls, _reg_cls):
@@ -100,8 +100,8 @@ class GenericController(ControllerInterface):
                 #TODO: Add ability for class-less functions / top-level qualnames to be registered!
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
             if not cls in cls._registered_classes:
-                cls._registered_classes[cls] = {}
-            cls._registered_classes[cls][owning_class] = {action: func}
+                cls._registered_classes[cls.__qualname__] = {}
+            cls._registered_classes[cls.__qualname__][owning_class] = {action: func}
             return func
 
         if _func == None:

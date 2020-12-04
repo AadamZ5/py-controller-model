@@ -10,6 +10,7 @@ Goals:
 ## Installation
 
 Install this repository directly with `pip install git+https://github.com/AadamZ5/py-controller-model/`
+
 Alternatively, clone this repository, then when inside of the directory, install with `pip install .`
 
 ## Example usage

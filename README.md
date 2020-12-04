@@ -37,6 +37,8 @@ gc = cm.GenericController(a)
 ```python
 import controllermodel as cm
 
+
+#Here we define our specific controller. It can have special logic and methods and algorithms for our arbitrary API.
 class SpecificController(cm.GenericController):
     def __init__(self, instance_of_class):
         super().__init__(instance_of_class)
@@ -44,11 +46,13 @@ class SpecificController(cm.GenericController):
     def special_method(self):
         print(self._registered_classes)
 
+#Here we use our SpecificController to tell it what methods to expect.
 @SpecificController.register_model
 class A:
     def __init__(self):
         self.a = "A variable"
 
+    #More specifically, when we decorate, we tell our controller to expect this function on the instance we supply.
     @SpecificController.register_action
     def myaction(self):
         print(self.a)

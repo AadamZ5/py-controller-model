@@ -16,7 +16,7 @@ class GenericController(ControllerInterface):
     _registered_classes = {}   # Dict of {
                                 #           registering_controller: {
                                 #               klass: {
-                                #                   action: method        
+                                #                   action: func_name        
                                 #               }
                                 #           }
                                 #       }
@@ -129,7 +129,7 @@ class GenericController(ControllerInterface):
                 cls._registered_classes[cls.__qualname__] = {}
             if not owning_class in cls._registered_classes[cls.__qualname__]:
                 cls._registered_classes[cls.__qualname__][owning_class] = {}
-            cls._registered_classes[cls.__qualname__][owning_class][action] = func
+            cls._registered_classes[cls.__qualname__][owning_class][action] = func.__name__
             return func
 
         if _func == None:
@@ -139,8 +139,10 @@ class GenericController(ControllerInterface):
 
     def execute_action(self, action: str, *a, **kw):
         if action in self._func_set: # Find out where the action came from. Which class?
-            class_type, func = self._func_set[action] # Get the class name, and the unbound function   
+            class_type, func_name = self._func_set[action] # Get the class name, and the function name   
             class_instance = self._class_instances.get(class_type, None) # Try to get an instance
             if class_instance:
-                return func(class_instance, *a, **kw) # Go!
+                func = getattr(class_instance, func_name, None) # Get the actual *bound* function on the class
+                if func:
+                    return func(*a, **kw) # The instance is automatically passed in on this bound class function
         return None

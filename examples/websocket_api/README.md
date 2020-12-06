@@ -53,11 +53,10 @@ To register the same function from the same model, perhaps with different action
 
 @WebsocketController.register_action(action="add_employee") # This will register an action only on WebsocketController
 @HttpController.register_action(action="ADD_EMPLOYEE") # This will register an action only on HttpController            
-                                                       # [!] HttpController isn't actually defined in this example! [!] 
-def add_employee(self, name, age, employee_id):
+def add_employee(self, name, age, employee_id):        # [!] HttpController isn't actually defined in this example project! [!] 
     new_employee = Employee(name, age, employee_id)
     self.persons.append()
     return {'employee': new_employee} # This gets sent back through our websocket controller. 
-                                        # The WebsocketController class decides how to handle the data we send back.
+                                      # The WebsocketController class decides how to handle the data we send back.
 ...
 ```

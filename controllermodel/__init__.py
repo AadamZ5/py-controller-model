@@ -1,3 +1,2 @@
-from .controller.controllerinterface import ControllerInterface
-from .controller.controller import GenericController
-
+from .controller import GenericController
+from .controllerinterface import ControllerInterface

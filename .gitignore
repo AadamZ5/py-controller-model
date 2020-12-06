@@ -3,12 +3,18 @@
 
 # Setuptools distribution folder.
 /dist/
+/build
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
+.eggs
+.pytest_cache
 
 #Pycache
 __pycache__
 
 #Local experimentation folder
 experiment
+
+#vscode bloat
+.vscode

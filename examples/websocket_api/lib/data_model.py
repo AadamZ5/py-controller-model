@@ -21,10 +21,20 @@ class DataModel:
 
     @WebsocketController.register_action
     def add_employee(self, name, age, employee_id):
-        self.persons.append(Employee(name, age, employee_id))
+        new_employee = Employee(name, age, employee_id)
+        self.persons.append(new_employee)
+        return {'employee': new_employee}
 
     @WebsocketController.register_action
     def add_customer(self, name, age):
-        self.persons.append(Customer(name, age))
+        new_customer = Customer(name, age)
+        self.persons.append(new_customer)
+        return {'customer': new_customer}
+
+    @WebsocketController.register_action
+    def get_persons(self):
+        return self.persons
+
+
 
     

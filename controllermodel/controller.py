@@ -138,6 +138,11 @@ class GenericController(ControllerInterface):
             return wrapper_func(_func) # If the decorator was called without keywords, the function we are targeting is implicitly supplied.
 
     def execute_action(self, action: str, *a, **kw):
+        """
+        This function executes an action by it's name, and passes on any *args and **kwargs to it as well.
+
+        This function should be called in the controller logic, where your API endpoint recieves data.
+        """
         if action in self._func_set: # Find out where the action came from. Which class?
             class_type, func_name = self._func_set[action] # Get the class name, and the function name   
             class_instance = self._class_instances.get(class_type, None) # Try to get an instance

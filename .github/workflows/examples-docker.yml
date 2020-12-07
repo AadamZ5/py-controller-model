@@ -45,9 +45,9 @@ jobs:
           # Builder instance
           #builder: # optional
           # Build's context is the set of files located in the specified PATH or URL
-          #context: # optional
+          context: ${{env.GITHUB_WORKSPACE}}/examples # optional
           # Path to the Dockerfile
-          file: '$GITHUB_WORKSPACE/examples/dockerfile'
+          file: '${{env.GITHUB_WORKSPACE}}/examples/dockerfile'
           # List of build-time variables
           #build-args: # optional
           # List of metadata for an image

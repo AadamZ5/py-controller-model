@@ -69,7 +69,7 @@ jobs:
           # Push is a shorthand for --output=type=registry
           #push: true # optional, default is false
           # List of output destinations (format: type=local,dest=path)
-          outputs: azocolo/py-controller-model-examples # optional
+          outputs: azocolo/py-controller-model-examples:latest # optional
           # List of external cache sources for buildx (eg. user/app:cache, type=local,src=path/to/dir)
           #cache-from: # optional
           # List of cache export destinations for buildx (eg. user/app:cache, type=local,dest=path/to/dir)

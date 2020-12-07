@@ -1,0 +1,15 @@
+FROM python:3.8.1-alpine
+
+LABEL maintainer="azocolo@gmail.com"
+LABEL author="azocolo@gmail.com"
+
+RUN apk add git
+RUN pip3 install git+https://github.com/AadamZ5/py-controller-model@dev websockets jsonpickle
+
+COPY ./ /root/examples/
+
+EXPOSE 7030-7035
+
+WORKDIR /root/examples/
+
+ENTRYPOINT [ "sh" ]

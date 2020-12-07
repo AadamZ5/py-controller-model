@@ -1,0 +1,3 @@
+websockets>=8.1
+jsonpickle>=1.4.2
+git+https://github.com/AadamZ5/py-controller-model@main

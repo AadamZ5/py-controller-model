@@ -7,6 +7,7 @@ This example demonstrates how this library can be used to simplify a simple webs
  - `lib/data_model.py` This is the DataModel of our example. It holds and manipulates our data. This is what we want our API endpoint to control.
  - `lib/websocket_endpoint.py` This is our API that controls our DataModel. 
  - `app.py` This is the application file to run.
+ - Port `7033` is used for this example.
 
 ## Getting started
 

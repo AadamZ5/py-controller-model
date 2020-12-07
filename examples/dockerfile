@@ -8,6 +8,8 @@ RUN pip3 install git+https://github.com/AadamZ5/py-controller-model@dev websocke
 
 COPY ./ /root/examples/
 
+EXPOSE 7030-7035
+
 WORKDIR /root/examples/
 
 ENTRYPOINT [ "sh" ]

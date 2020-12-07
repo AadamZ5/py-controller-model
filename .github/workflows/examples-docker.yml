@@ -54,7 +54,7 @@ jobs:
           # Load is a shorthand for --output=type=docker
           #load: # optional, default is false
           # Push is a shorthand for --output=type=registry
-          push: true # optional, default is false
+          #push: true # optional, default is false
           # List of output destinations (format: type=local,dest=path)
           outputs: azocolo/py-controller-model-examples # optional
           # List of external cache sources for buildx (eg. user/app:cache, type=local,src=path/to/dir)

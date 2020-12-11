@@ -17,7 +17,7 @@ class Employee(Person):
 @WebsocketController.register_model
 class DataModel:
     def __init__(self):
-        self.persons = [] list
+        self.persons = []
         self.special_number = 23
 
     @WebsocketController.register_action

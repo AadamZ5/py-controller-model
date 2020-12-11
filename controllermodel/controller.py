@@ -50,7 +50,7 @@ class GenericController(ControllerInterface):
             func_names = self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__].keys()
 
             for n in func_names:
-                self._func_set[n] = (instance_of_class.__class__.__qualname__, self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__][n]) # Tuple of (class_name, unbound_func)
+                self._func_set[n] = (instance_of_class.__class__.__qualname__, self._registered_classes[self.__class__.__qualname__][instance_of_class.__class__.__qualname__][n]) # Tuple of (class_name, Action)
             
 
     @classmethod

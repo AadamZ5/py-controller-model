@@ -7,6 +7,7 @@ import functools
 from typing import Optional, Union, List, Tuple
 
 from .controllerinterface import ControllerInterface
+from .action import Action
 
 class GenericController(ControllerInterface):
     """
@@ -53,7 +54,7 @@ class GenericController(ControllerInterface):
             
 
     @classmethod
-    def register_model(cls, _reg_cls):
+    def register_model(cls, _reg_cls: object):
         """
         This is a decorator funciton.
 
@@ -66,6 +67,14 @@ class GenericController(ControllerInterface):
 
         # The biggest challenge is linking the instance to its type's registered actions. 
         # When this function is used as a decorator 
+
+        owning_class = _reg_cls.__qualname__
+
+        if not cls.__qualname__ in cls._registered_classes:
+            cls._registered_classes[cls.__qualname__] = {}
+        if not owning_class in cls._registered_classes[cls.__qualname__]:
+            cls._registered_classes[cls.__qualname__][owning_class] = {}
+
         return _reg_cls
 
     @classmethod
@@ -101,16 +110,10 @@ class GenericController(ControllerInterface):
             nonlocal description
             nonlocal cls
 
-            if action == None:
-                try:
-                    action = func.__name__ # Try and get a name from the function itself if they didn't supply one.
-                except AttributeError:
-                    raise TypeError("Object {0} is not a named function!".format(func)) #! We don't like lambdas! (Can you even decorate those?)
-            if description == None:
-                description = inspect.getdoc(func) # See if we can grab the docstring if one exists.
+            action_obj = Action(func, action=action, description=description)
 
             # Make sure there are no conflicting action names registered on this specific controller.
-            cls._check_action_exists(action) # This will except if there is. 
+            cls._check_action_exists(action_obj.action) # This will except if there is. 
 
             # Get the owning class's qualifying name
             owning_class = None
@@ -129,7 +132,7 @@ class GenericController(ControllerInterface):
                 cls._registered_classes[cls.__qualname__] = {}
             if not owning_class in cls._registered_classes[cls.__qualname__]:
                 cls._registered_classes[cls.__qualname__][owning_class] = {}
-            cls._registered_classes[cls.__qualname__][owning_class][action] = func.__name__
+            cls._registered_classes[cls.__qualname__][owning_class][action] = action_obj
             return func
 
         if _func == None:
@@ -144,7 +147,8 @@ class GenericController(ControllerInterface):
         This function should be called in the controller logic, where your API endpoint recieves data.
         """
         if action in self._func_set: # Find out where the action came from. Which class?
-            class_type, func_name = self._func_set[action] # Get the class name, and the function name   
+            class_type, action = self._func_set[action] # Get the class name, and the function name
+            func_name = action.func_name
             class_instance = self._class_instances.get(class_type, None) # Try to get an instance
             if class_instance:
                 func = getattr(class_instance, func_name, None) # Get the actual *bound* function on the class

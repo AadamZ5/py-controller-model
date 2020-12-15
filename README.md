@@ -83,6 +83,10 @@ sc.execute_action('myaction')
 
 `GenericController` is designed to be inherited from in your own controller. The important function to consider is `GenericController.execute_action` which is the function that looks up the corresponding model function to call.
 
+## Flask already exists, why should I use this?
+
+You're right. Flask does already exist, but this library actually goes one level of abstraction lower than Flask does. Flask is a fully-featured HTTP REST API, while this is simply a controller routing middle-man. If you think Flask solves all of your problems, then you probably don't need this library. If you need more specific control than what Flask offers, then you may benefit from your own implementation using this as a backbone.
+
 ## Contributing
 
 Please feel free to open an issue or pull request with your ideas and intentions! Any help is greatly appreciated! 

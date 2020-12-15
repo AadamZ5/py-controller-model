@@ -136,7 +136,7 @@ class GenericController(ControllerInterface):
                 cls._registered_classes[cls.__qualname__] = {}
             if not owning_class in cls._registered_classes[cls.__qualname__]:
                 cls._registered_classes[cls.__qualname__][owning_class] = {}
-            cls._registered_classes[cls.__qualname__][owning_class][action] = action_obj
+            cls._registered_classes[cls.__qualname__][owning_class][action_obj.action] = action_obj
             return func
 
         if _func == None:

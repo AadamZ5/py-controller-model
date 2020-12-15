@@ -12,7 +12,19 @@ class A:
         print(self.a)
         return self.a
 
+    @GenericController.register_action
+    def myaction_copy(self):
+        print(self.a)
+        return self.a
+
 def test_action():
     a = A()
     gc = GenericController(a)
     assert gc.execute_action('action') == "A variable"
+
+def test_action_unnamed():
+    a = A()
+    gc = GenericController(a)
+    assert gc.execute_action('myaction_copy') == "A variable"
+
+

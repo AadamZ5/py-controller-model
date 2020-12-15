@@ -9,6 +9,9 @@ from typing import Optional, Union, List, Tuple
 from .controllerinterface import ControllerInterface
 from .action import Action
 
+class GenericControllerContext:
+    pass
+
 class GenericController(ControllerInterface):
     """
     The base type Controller for a model. This implementation is barebones and very generic, but still perfectly usable. 
@@ -22,9 +25,10 @@ class GenericController(ControllerInterface):
                                 #           }
                                 #       }
 
-    def __init__(self, instance_of_class: Optional[object] = None):
+    def __init__(self, instance_of_class: Optional[object] = None, context_class: Optional[GenericControllerContext] = None):
         self._func_set = {} # Dict of {action: class_qualname}
         self._class_instances = {}
+        self._context_type = context_class
         if instance_of_class != None:
             self.connect_instance(instance_of_class)
 
@@ -140,7 +144,7 @@ class GenericController(ControllerInterface):
         else:
             return wrapper_func(_func) # If the decorator was called without keywords, the function we are targeting is implicitly supplied.
 
-    def execute_action(self, action: str, *a, **kw):
+    def execute_action(self, action: str, *a, _context: Optional[GenericControllerContext] = None, **kw):
         """
         This function executes an action by it's name, and passes on any *args and **kwargs to it as well.
 
@@ -153,5 +157,7 @@ class GenericController(ControllerInterface):
             if class_instance:
                 func = getattr(class_instance, func_name, None) # Get the actual *bound* function on the class
                 if func:
+                    if('_context' in action.argspec.kwonlyargs): # If they explicitly define they want context, give it to them.
+                        kw['_context'] = _context
                     return func(*a, **kw) # The instance is automatically passed in on this bound class function
         return None

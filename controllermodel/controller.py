@@ -4,7 +4,7 @@ The file contains the code for the GenericController class.
 
 import inspect
 import functools
-from typing import Optional, Union, List, Tuple
+from typing import Optional, Union, List, Tuple, Dict, Callable
 
 from .controllerinterface import ControllerInterface
 from .action import Action
@@ -26,8 +26,8 @@ class GenericController(ControllerInterface):
                                 #       }
 
     def __init__(self, instance_of_class: Optional[object] = None, context_class: Optional[GenericControllerContext] = None):
-        self._func_set = {} # Dict of {action: class_qualname}
-        self._class_instances = {}
+        self._func_set: Dict[str, Action] = {} # Dict of {action: action_metadata}
+        self._class_instances: Dict[str, object] = {}
         self._context_type = context_class
         if instance_of_class != None:
             self.connect_instance(instance_of_class)
@@ -94,7 +94,7 @@ class GenericController(ControllerInterface):
 
 
     @classmethod
-    def register_action(cls, _func=None, *args, action=None, description=None, **kw):
+    def register_action(cls, _func:Callable=None, *args, action=None, description=None, **kw):
         """
         This is a decorator function.
 
@@ -150,14 +150,14 @@ class GenericController(ControllerInterface):
 
         This function should be called in the controller logic, where your API endpoint recieves data.
         """
-        if action in self._func_set: # Find out where the action came from. Which class?
-            class_type, action = self._func_set[action] # Get the class name, and the function name
-            func_name = action.func_name
+        if action in self._func_set: # Find out where the action came from. Which one of our supplied instance classes?
+            class_type, action_obj = self._func_set[action] # Get the class name, and the action metadata
+            func_name = action_obj.func_name
             class_instance = self._class_instances.get(class_type, None) # Try to get an instance
             if class_instance:
                 func = getattr(class_instance, func_name, None) # Get the actual *bound* function on the class
                 if func:
-                    if('_context' in action.argspec.kwonlyargs): # If they explicitly define they want context, give it to them.
+                    if('_context' in action_obj.argspec.kwonlyargs) or ('_context' in action_obj.argspec): # If they explicitly define they want context, give it to them.
                         kw['_context'] = _context
                     return func(*a, **kw) # The instance is automatically passed in on this bound class function
         return None

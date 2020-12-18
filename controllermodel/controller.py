@@ -4,7 +4,12 @@ The file contains the code for the GenericController class.
 
 import inspect
 import functools
+import sys
+
 from typing import Optional, Union, List, Tuple, Dict, Callable
+
+if sys.version_info[0] == 3 and sys.version_info[1] <= 5:
+    import __future__
 
 from .controllerinterface import ControllerInterface
 from .action import Action

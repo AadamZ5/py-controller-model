@@ -88,7 +88,7 @@ class GenericController(ControllerInterface):
 
         for registered_class in cls._registered_classes[cls.__qualname__].keys():
             actions = cls._registered_classes[cls.__qualname__][registered_class].keys()
-            if action_name in actions:
+            if action_name in actions and owning_class != registered_class:
                 conflicting_action = str(next((x for x in actions if x == action_name), '[Unknown]'))
                 raise ValueError("Action name '{0}' has already been registered on controller '{1}'!\nConflicting registration with action '{2}' from class '{3}'.".format(action_name,cls.__qualname__,conflicting_action,registered_class))
 

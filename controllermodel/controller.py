@@ -82,7 +82,7 @@ class GenericController(ControllerInterface):
         return _reg_cls
 
     @classmethod
-    def _check_action_exists(cls, action_name):
+    def _check_action_exists(cls, action_name:str, owning_class:str=None):
         if not cls.__qualname__ in cls._registered_classes:
             return 
 
@@ -116,9 +116,6 @@ class GenericController(ControllerInterface):
 
             action_obj = Action(func, action=action, description=description)
 
-            # Make sure there are no conflicting action names registered on this specific controller.
-            cls._check_action_exists(action_obj.action) # This will except if there is. 
-
             # Get the owning class's qualifying name
             owning_class = None
             try:
@@ -132,6 +129,10 @@ class GenericController(ControllerInterface):
             if owning_class == '':
                 #TODO: Add ability for class-less functions / top-level qualnames to be registered!
                 raise Exception("Function does not have a valid qualifying name! Is this function a member of a class?")
+
+            # Make sure there are no conflicting action names registered on this specific controller.
+            cls._check_action_exists(action_obj.action, owning_class=owning_class) # This will except if there is. 
+
             if not cls.__qualname__ in cls._registered_classes:
                 cls._registered_classes[cls.__qualname__] = {}
             if not owning_class in cls._registered_classes[cls.__qualname__]:

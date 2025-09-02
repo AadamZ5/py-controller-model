@@ -1,6 +1,6 @@
 # py-controller-model
 
-Simplifies arbitrary API creation by leaving definition and binding in-code. 
+This is a free-form experimental API piping layer abstraction. The goal was to simplify arbitrary API creation by leaving definition and binding in-code. This was born from my own experimentation with abstraction and API design.
 
 Goals:
 - [x] Bind a controller to a model
